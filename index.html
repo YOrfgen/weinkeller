@@ -538,9 +538,9 @@
 
             <div class="qty-label">Stückzahl</div>
             <div class="qty-control">
-              <button class="qty-btn" onclick="changeQty('${w.id || i}', ${Math.max(0,(w.stueckzahl||1)-1)})">−</button>
+              <button class="qty-btn" onclick="changeQty('${w.id || i}', Math.max(0, parseInt(document.getElementById('qty-${w.id || i}').textContent)-1))">−</button>
               <div class="qty-value" id="qty-${w.id || i}">${w.stueckzahl || 1}</div>
-              <button class="qty-btn" onclick="changeQty('${w.id || i}', ${(w.stueckzahl||1)+1})">+</button>
+              <button class="qty-btn" onclick="changeQty('${w.id || i}', parseInt(document.getElementById('qty-${w.id || i}').textContent)+1)">+</button>
             </div>
             <button onclick="deleteWine('${w.id || i}')" style="background:none;border:none;color:var(--text-dim);font-size:11px;letter-spacing:0.1em;cursor:pointer;text-transform:uppercase;font-family:'DM Mono',monospace;margin-top:4px;" onmouseover="this.style.color='#c97a7a'" onmouseout="this.style.color='var(--text-dim)'">✕ Löschen</button>
           </div>
