@@ -428,6 +428,7 @@
   const N8N_WEBHOOK_LIST = 'https://wisemen.app.n8n.cloud/webhook/weinbestand-list';
   const N8N_WEBHOOK_QTY  = 'https://wisemen.app.n8n.cloud/webhook/weinbestand-qty';
   const N8N_WEBHOOK_DEL  = 'https://wisemen.app.n8n.cloud/webhook/weinbestand-delete';
+  const N8N_WEBHOOK_FAV  = 'https://wisemen.app.n8n.cloud/webhook/weinbestand-favorit';
   // ============================================================
 
   // Lokaler Demo-Speicher bis n8n verbunden ist
@@ -519,7 +520,10 @@
 
     list.innerHTML = wines.map((w, i) => `
       <div class="wine-card" id="card-${w.id || i}">
-        <div class="wine-name">${w.name || '–'}</div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div class="wine-name" style="padding-left:16px">${w.name || '–'}</div>
+          <button id="fav-${w.id || i}" onclick="toggleFavorit('${w.id || i}', ${w.favorit ? 'true' : 'false'})" style="background:none;border:none;font-size:22px;cursor:pointer;color:${w.favorit ? '#b8860b' : 'var(--text-dim)'};padding:0 4px;line-height:1;">${w.favorit ? '★' : '☆'}</button>
+        </div>
         <div class="wine-origin">${w.herkunft || ''}</div>
         <div class="wine-meta">
           ${w.rebsorten ? `<div class="wine-meta-row"><span>Rebsorte</span>${w.rebsorten}</div>` : ''}
@@ -528,6 +532,7 @@
           ${w.jahrgang ? `<div class="wine-meta-row"><span>Jahrgang</span>${w.jahrgang}</div>` : ''}
           ${w.trinkreife ? `<div class="wine-meta-row"><span>Trinkreife</span>${w.trinkreife}</div>` : ''}
           ${w.geschmack ? `<div class="wine-meta-row"><span>Charakter</span>${w.geschmack}</div>` : ''}
+          ${w.bewertung ? `<div class="wine-meta-row"><span>Bewertung</span>${w.bewertung}</div>` : ''}
         </div>
         <div class="wine-footer">
           <div>
@@ -582,6 +587,18 @@
       const count = document.querySelectorAll('.wine-card').length;
       document.getElementById('wine-count').textContent = count + (count === 1 ? ' Flasche' : ' Flaschen');
     } catch(e) { alert('Fehler beim Löschen.'); }
+  }
+
+  function toggleFavorit(id, current) {
+    const isFav = !current;
+    const btn = document.getElementById('fav-' + id);
+    btn.textContent = isFav ? '★' : '☆';
+    btn.style.color = isFav ? '#b8860b' : 'var(--text-dim)';
+    fetch(N8N_WEBHOOK_FAV, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': 'wein-geheim-2026' },
+      body: JSON.stringify({ id, favorit: isFav })
+    }).catch(e => console.error('Favorit update failed', e));
   }
 
   function showStatus(msg, type) {
