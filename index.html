@@ -523,7 +523,10 @@
         <div class="wine-origin">${w.herkunft || ''}</div>
         <div class="wine-meta">
           ${w.rebsorten ? `<div class="wine-meta-row"><span>Rebsorte</span>${w.rebsorten}</div>` : ''}
-          ${w.eigenschaften ? `<div class="wine-meta-row"><span>Details</span>${w.eigenschaften}</div>` : ''}
+          ${w.farbe_geschmack ? `<div class="wine-meta-row"><span>Stil</span>${w.farbe_geschmack}</div>` : ''}
+          ${w.alkohol ? `<div class="wine-meta-row"><span>Alkohol</span>${w.alkohol}</div>` : ''}
+          ${w.jahrgang ? `<div class="wine-meta-row"><span>Jahrgang</span>${w.jahrgang}</div>` : ''}
+          ${w.trinkreife ? `<div class="wine-meta-row"><span>Trinkreife</span>${w.trinkreife}</div>` : ''}
           ${w.geschmack ? `<div class="wine-meta-row"><span>Charakter</span>${w.geschmack}</div>` : ''}
         </div>
         <div class="wine-footer">
@@ -546,7 +549,7 @@
     `).join('');
   }
 
-  async function changeQty(id, newQty) {
+  function changeQty(id, newQty) {
     if (newQty < 0) return;  // Stückzahl minimum 0
     document.getElementById('qty-' + id).textContent = newQty;
 
@@ -557,13 +560,12 @@
       return;
     }
 
-    try {
-      await fetch(N8N_WEBHOOK_QTY, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-api-key': 'wein-geheim-2026' },
-        body: JSON.stringify({ id, stueckzahl: newQty })
-      });
-    } catch(e) { console.error('Qty update failed', e); }
+    // Fire and forget – nicht auf Antwort warten
+    fetch(N8N_WEBHOOK_QTY, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': 'wein-geheim-2026' },
+      body: JSON.stringify({ id, stueckzahl: newQty })
+    }).catch(e => console.error('Qty update failed', e));
   }
 
   async function deleteWine(id) {
