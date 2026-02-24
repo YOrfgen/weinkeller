@@ -511,7 +511,8 @@
 
   function renderWines(wines) {
     const list = document.getElementById('wine-list');
-    document.getElementById('wine-count').textContent = wines.length + (wines.length === 1 ? ' Flasche' : ' Flaschen');
+    const totalFlaschen = wines.reduce((sum, w) => sum + (parseInt(w.stueckzahl) || 0), 0);
+    document.getElementById('wine-count').textContent = totalFlaschen + (totalFlaschen === 1 ? ' Flasche' : ' Flaschen') + ' · ' + wines.length + ' Weine';
 
     if (!wines.length) {
       list.innerHTML = `<div class="empty-state"><div class="icon">🍷</div><p>Noch kein Wein im Keller.</p></div>`;
@@ -584,8 +585,12 @@
       // Karte aus DOM entfernen
       document.getElementById('card-' + id)?.remove();
       // Zähler aktualisieren
-      const count = document.querySelectorAll('.wine-card').length;
-      document.getElementById('wine-count').textContent = count + (count === 1 ? ' Flasche' : ' Flaschen');
+      const cards = document.querySelectorAll('.wine-card');
+      const total = Array.from(cards).reduce((sum, c) => {
+        const qtyEl = c.querySelector('[id^="qty-"]');
+        return sum + (qtyEl ? parseInt(qtyEl.textContent) || 0 : 0);
+      }, 0);
+      document.getElementById('wine-count').textContent = total + (total === 1 ? ' Flasche' : ' Flaschen') + ' · ' + cards.length + ' Weine';
     } catch(e) { alert('Fehler beim Löschen.'); }
   }
 
